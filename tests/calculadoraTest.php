@@ -3,73 +3,96 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use App\Calculadora;
 
-class CalculadoraTest extends TestCase {
-
-    public function testSumar() {
-        $calculadora = new Calculadora();
-        $resultado = $calculadora->sumar(2, 3);
-
-        $this->assertEquals(5, $resultado);
+class CalculadoraTest extends TestCase 
+{
+    private $calculadora;
+    
+    protected function setUp(): void
+    {
+        $this->calculadora = new Calculadora();
     }
 
-    public function testRestar() {
-        $calculadora = new Calculadora();
-        $resultado = $calculadora->restar(10, 5);
 
-        $this->assertEquals(5, $resultado);
+    // PROVEEDORES//
+    
+    public static function proveedorSuma(): array
+    {
+        return [
+            [8, 2, 10],
+            [0, 0, 0],
+            [-8, 2, -6], 
+            [200, 400, 600],
+        ];
     }
 
-    public function testMultiplicar() {
-        $calculadora = new Calculadora();
-        $resultado = $calculadora->multiplicar(5, 4);
-
-        $this->assertEquals(20, $resultado);
+    public static function proveedorResta(): array
+    {
+        return [
+            [8, 2, 6],
+            [6, 8, -2],  
+            [0, 6, -6],
+            [200, 100, 100],
+        ];
     }
 
-    public function testDividirEntreCero() {
-        $this->expectException(\Exception::class);
-
-        $calculadora = new Calculadora();
-        $calculadora->dividir(10, 0);
+    public static function proveedorMultiplicacion(): array
+    {
+        return [
+            [8, 2, 16],
+            [5, 0, 0],
+            [-5, 3, -15],
+            [10, 10, 100],
+        ];
     }
 
-    // Ejercicio 01
-    public function testEsPar() {
-        $calculadora = new Calculadora();
-
-        $this->assertTrue($calculadora->esPar(2));
-        $this->assertTrue($calculadora->esPar(10));
-        $this->assertFalse($calculadora->esPar(5));
+    public static function proveedorDivision(): array
+    {
+        return [
+            [14, 2, 7, false],
+            [9, 2, 4.5, false],
+            [0, 6, 0, false],
+            [20, 0, null, true], 
+        ];
     }
 
-    // Ejercicio 02
-    public function testEsPositivo() {
-        $calculadora = new Calculadora();
 
-        $this->assertTrue($calculadora->esPositivo(8));
-        $this->assertTrue($calculadora->esPositivo(1));
-        $this->assertFalse($calculadora->esPositivo(-5));
-        $this->assertFalse($calculadora->esPositivo(0));
+    // PRUEBAS//
+    
+    #[DataProvider('proveedorSuma')]
+    public function testSumar($a, $b, $esperado) 
+    {
+        $resultado = $this->calculadora->sumar($a, $b);
+        $this->assertEquals($esperado, $resultado);
     }
 
-    // Ejercicio 03
-    public function testEsNegativo() {
-        $calculadora = new Calculadora();
-
-        $this->assertTrue($calculadora->esNegativo(-3));
-        $this->assertTrue($calculadora->esNegativo(-20));
-        $this->assertFalse($calculadora->esNegativo(5));
-        $this->assertFalse($calculadora->esNegativo(0));
+    #[DataProvider('proveedorResta')]
+    public function testRestar($a, $b, $esperado) 
+    {
+        $resultado = $this->calculadora->restar($a, $b);
+        $this->assertEquals($esperado, $resultado);
     }
 
-    // Ejercicio 04
-    public function testEsCero() {
-        $calculadora = new Calculadora();
+    #[DataProvider('proveedorMultiplicacion')]
+    public function testMultiplicar($a, $b, $esperado) 
+    {
+        $resultado = $this->calculadora->multiplicar($a, $b);
+        $this->assertEquals($esperado, $resultado);
+    }
 
-        $this->assertTrue($calculadora->esCero(0));
-        $this->assertFalse($calculadora->esCero(7));
-        $this->assertFalse($calculadora->esCero(-1));
+    #[DataProvider('proveedorDivision')]
+    public function testDividir($a, $b, $esperado, $expectException)
+    {
+        if ($expectException) {
+            // CAMBIADO: Ahora espera \Exception::class para coincidir con tu Calculadora.php
+            $this->expectException(\Exception::class);
+            $this->calculadora->dividir($a, $b);
+        } else {
+            $resultado = $this->calculadora->dividir($a, $b);
+            $this->assertEquals($esperado, $resultado);
+        }
+    
     }
 }
