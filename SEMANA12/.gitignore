@@ -1,0 +1,11 @@
+# Excluir la carpeta de dependencias
+/vendor/
+
+# Excluir la caché de ejecución de PHPUnit
+.phpunit.result.cache
+*.cache
+
+# Archivos ocultos 
+.vscode/
+.DS_Store
+Thumbs.db
